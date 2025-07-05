@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useGlobalState } from '../../context/GlobalState';
-
 
 export default function Home() {
     const {
@@ -16,10 +15,33 @@ export default function Home() {
         setCurrentScreen('/(tabs)/home');
     }, []);
 
+    const sendUserDetails = async () => {
+        try {
+            const response = await fetch('http:// 192.168.94.217:5000/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: 'Test',
+                    email: 'Raj@gmt.com',
+                    age: 25
+                })
+            });
+
+            const data = await response.json();
+            console.log('API response:', data);
+
+            Alert.alert('User Saved', JSON.stringify(data));
+        } catch (error) {
+            console.error('Error sending user details:', error);
+            Alert.alert('Error', 'Failed to send user details.');
+        }
+    };
+
     return (
         <>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                {/* <CustomHeader title="Home" /> */}
                 <View style={styles.container}>
                     <Text style={styles.title}>Home Screen</Text>
                     <Text style={styles.clicks}>Clicks: {screenClicks['/(tabs)/home'] || 0}</Text>
@@ -30,6 +52,10 @@ export default function Home() {
 
                     <View style={{ marginTop: 12 }}>
                         <Button title="Reset" onPress={() => resetClick('/(tabs)/home')} />
+                    </View>
+
+                    <View style={{ marginTop: 16 }}>
+                        <Button title="Send User Details" onPress={sendUserDetails} />
                     </View>
 
                     <View style={{ marginTop: 24 }}>
